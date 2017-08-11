@@ -34,16 +34,17 @@ app.get('/:urlId', function(req, res) {
         , _id: 0
       }).toArray(function(err, docs) {
         if (err) res.sendStatus(500).send('An error happened while gathering data')
-        res.redirect(docs[0].origUrl)
+        if (docs.length > 1) {
+          res.redirect(docs[0].origUrl)
+        } else {
+          res.end('Not a valid short url')
+        }
         db.close()
       })
   })
 })
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (request, response) {
-  response.sendFile(__dirname + '/views/index.html');
-});
+
 
 app.get("/short/*", function (req, res) {
   var origUrl = req.params[0]
@@ -73,6 +74,11 @@ app.get("/short/*", function (req, res) {
     res.json(results)
   }
 })
+
+// http://expressjs.com/en/starter/basic-routing.html
+app.get("/", function (request, response) {
+  response.sendFile(__dirname + '/views/index.html');
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT || '3939', function () {
